@@ -1,0 +1,31 @@
+{
+    "paths": [
+        {
+            "delimiter": "|",
+            "primary_key": "id",
+            "pattern": "reports/.*",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "int64",
+                    "nullable": false
+                },
+                {
+                    "name": "alpha",
+                    "type": "double",
+                    "nullable": true
+                },
+                {
+                    "name": "beta",
+                    "type": "double",
+                    "nullable": true
+                },
+                {
+                    "name": "gamma",
+                    "type": "double",
+                    "nullable": true
+                }
+            ]
+        }
+    ]
+}

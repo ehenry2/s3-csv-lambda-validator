@@ -1,0 +1,4 @@
+behave
+python-dotenv
+boto3
+pytest

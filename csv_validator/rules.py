@@ -1,0 +1,148 @@
+import json
+import logging
+import os
+import re
+
+import pyarrow
+import pyarrow.csv as csv
+import pyarrow.fs as fs
+
+
+NOT_RUN = "NOT_RUN"
+STARTED = "STARTED"
+SUCCESS = "SUCCESS"
+FAILED = "FAILED"
+TABLE_NAME = "SCHEMA_TABLE_NAME"
+
+
+class ValidationSuite:
+    """
+    This class contains the base logic to run all of the rules
+    and deliver the validation result.
+    """
+    def __init__(self, rules, notifier):
+        """
+        Constructor.
+
+        :param rules: List of rules that the suite will validate.
+        :type rules: List of objects that implement Rule interface.
+
+        :param notifier: The notifier that encapsulates the logic of sending
+                         the notification.
+        :type  notifier: object that implements Notifier
+        """
+        self.rules = rules
+        self.notifier = notifier
+    
+    def validate(self, event, session):
+        """
+        Run validation on all the rules and send a notification.
+
+        :param event: The event passed to the lambda.
+        :type  event: dict
+
+        :param session: boto3 session
+        :type  session: boto3 session
+        """
+        results = []
+        for rule in self.rules:
+            rule.validate(session, event)
+            results.append((rule.status, rule.name, rule.description, rule.output))
+            if rule.status == FAILED and rule.continue_on_fail is False:
+                break
+        self.notifier.notify(results)
+
+
+class NoMatchingSchemaException(Exception):
+    pass
+
+
+class Rule:
+    def __init__(self, name, description):
+        self.description = description
+        self.status = NOT_RUN
+        self.output = ""
+        self.continue_on_fail = False
+        self.name = name
+
+    def fail(self, message):
+        self.status = FAILED
+        self.output = message
+
+    def validate(self, session, event):
+        raise NotImplementedError
+
+
+class FileFormatValidator(Rule):
+
+    def validate(self, session, event):
+        self.status = STARTED
+        for record in event["Records"]:
+            key = record["s3"]["object"]["key"]
+            logging.info(f"Validating csv file format for {key}")
+            if key.split(".")[-1] != "csv":
+                msg = f"{key} does not match pattern of *.csv"
+                logging.info(msg)
+                self.fail(msg)
+                return
+        self.status = SUCCESS
+
+
+class ValidateSchema(Rule):
+
+    def __init__(self, name, description, config_loader):
+        super().__init__(name, description)
+        self.paths = None
+        self.config_loader = config_loader
+        self.delimiter = None
+        self.pattern = None
+        self.primary_key = None
+
+    def validate(self, session, event):
+        self.status = STARTED
+        self.paths = self.config_loader.load(session)["paths"]
+        for record in event["Records"]:
+            bucket = record["s3"]["bucket"]["name"]
+            key = record["s3"]["object"]["key"]
+            dirname = key.split("/")[0:-1]
+            try:
+                schema = self.get_schema(dirname)
+                self.scan_file(bucket, key, schema)
+            except pyarrow.lib.ArrowInvalid as e:
+                self.fail(e.args[0])
+            except NoMatchingSchemaException:
+                self.fail(f"No schema matches key: {key}")
+                return
+            except Exception as e:
+                self.fail("Unknown error: {0}".format(str(e)))
+        self.status = SUCCESS
+
+    def scan_file(self, bucket, key, schema):
+        uri = f"{bucket}/{key}"
+        s3fs = fs.S3FileSystem()
+        filestream = s3fs.open_input_stream(uri)
+        opts = csv.ConvertOptions(column_types=schema)
+        parse_opts = csv.ParseOptions(delimiter=self.delimiter)
+        reader = csv.open_csv(filestream, convert_options=opts,
+                              parse_opts=parse_opts)
+        for _ in reader.read_next_batch():
+            pass
+
+    def get_schema(self, dirname):
+        for path in self.paths:
+            if path["prefix"] == dirname:
+                self.delimiter = path["delimiter"]
+                self.pattern = path["pattern"]
+                self.primary_key = path["primary_key"]
+                fields = []
+                for field in self.paths["fields"]:
+                    fields.append(
+                        pyarrow.field(
+                            field["name"],
+                            field["type"],
+                            field["nullable"]
+                        )
+                    )
+                schema = pyarrow.schema(fields)
+                return schema
+        raise NoMatchingSchemaException()
