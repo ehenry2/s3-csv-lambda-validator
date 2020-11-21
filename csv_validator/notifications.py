@@ -82,6 +82,15 @@ class CsvEmailNotifier(Notifier):
                         The tuple has the format (status, name, description, output)
         :type  results: List of tuples of (string, string, string, string)
         """
+        # For email, we probably only want to notify if a failure has
+        # occurred, so check first before we send anything.
+        failed = False
+        for result in results:
+            if result[0] == "FAILED":
+                failed = True
+        if not failed:
+            return
+        # Send an email
         buffer = CsvEmailNotifier._results_to_csv_buffer(results)
         client = self.session.client('sesv2')
         client.send_email(

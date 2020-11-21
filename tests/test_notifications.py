@@ -19,6 +19,7 @@ FAILED,check_2,Second check,failed\r
 
 
 def test_ses_notify():
+    # Case 1 - we have failure, send email.
     results = [
         ("OK", "check_1", "First check", ""),
         ("FAILED", "check_2", "Second check", "failed")
@@ -31,3 +32,15 @@ def test_ses_notify():
     notifier = CsvEmailNotifier(email, recipients, mock_session)
     notifier.notify(results)
     mock_client.send_email.assert_called()
+    # Case 2 - no failure, don't send.
+    results = [
+        ("OK", "check_1", "First check", "")
+    ]
+    mock_client = mock.MagicMock(name="mock_client")
+    mock_session = mock.MagicMock(name="mock_session")
+    mock_session.client.return_value = mock_client
+    email = "me@example.com"
+    recipients = ["you@example.com"]
+    notifier = CsvEmailNotifier(email, recipients, mock_session)
+    notifier.notify(results)
+    mock_client.send_email.assert_not_called()
