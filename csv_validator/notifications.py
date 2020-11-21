@@ -2,6 +2,7 @@ import csv
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import io
+import json
 
 
 class Notifier:
@@ -102,4 +103,30 @@ class CsvEmailNotifier(Notifier):
                     "Data": self._buffer_to_attached_email(buffer)
                 }
             }
+        )
+
+
+class AtddNotifier(Notifier):
+    """
+    A special notifier that uploads the results of an atdd test to s3.
+    """
+    def __init__(self, bucket, key, session):
+        self.bucket = bucket
+        self.key = key
+        self.session = session
+
+    def notify(self, results):
+        """
+        Send a notification to the user when complete.
+
+        :param results: The results in tuple form for each rule.
+                        The tuple has the format (status, name, description, output)
+        :type  results: List of tuples of (string, string, string, string)
+        """
+        refmt = [list(result) for result in results]
+        client = self.session.client("s3")
+        client.put_object(
+            Bucket=self.bucket,
+            Key=self.key,
+            Body=json.dumps(refmt).encode("utf-8")
         )

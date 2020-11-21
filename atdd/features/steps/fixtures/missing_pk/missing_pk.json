@@ -1,0 +1,773 @@
+{
+    "paths": [
+        {
+            "delimiter": ",",
+            "primary_key": "BENE_MBI_ID",
+            "pattern": "data/P\\.A1161\\.ACO\\.QALR\\.D200521\\.T1200012.*",
+            "fields": [
+                {
+                    "name": "BENE_MBI_ID",
+                    "type": "string",
+                    "nullable": false
+                },
+                {
+                    "name": "BENE_HIC_NUM",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "BENE_1ST_NAME",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "BENE_LAST_NAME",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "BENE_SEX_CD",
+                    "type": "int64",
+                    "nullable": true
+                },
+                {
+                    "name": "BENE_BRTH_DT",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "BENE_DEATH_DT",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "GEO_SSA_CNTY_CD_NAME",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "GEO_SSA_STATE_NAME",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "STATE_COUNTY_CD",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "IN_VA_MAX",
+                    "type": "int64",
+                    "nullable": true
+                },
+                {
+                    "name": "VA_TIN",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "VA_NPI",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "CBA_FLAG",
+                    "type": "int64",
+                    "nullable": true
+                },
+                {
+                    "name": "ASSIGNMENT_TYPE",
+                    "type": "int64",
+                    "nullable": true
+                },
+                {
+                    "name": "ASG_STATUS",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "PARTD_MONTHS",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "EXCLUDED",
+                    "type": "int64",
+                    "nullable": true
+                },
+                {
+                    "name": "DECEASED_EXCLUDED",
+                    "type": "int64",
+                    "nullable": true
+                },
+                {
+                    "name": "MISSING_ID_EXCLUDED",
+                    "type": "int64",
+                    "nullable": true
+                },
+                {
+                    "name": "PART_A_B_ONLY_EXCLUDED",
+                    "type": "int64",
+                    "nullable": true
+                },
+                {
+                    "name": "GHP_EXCLUDED",
+                    "type": "int64",
+                    "nullable": true
+                },
+                {
+                    "name": "OUTSIDE_US_EXCLUDED",
+                    "type": "int64",
+                    "nullable": true
+                },
+                {
+                    "name": "OTHER_SHARED_SAV_INIT",
+                    "type": "int64",
+                    "nullable": true
+                },
+                {
+                    "name": "EnrollFlag1",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "EnrollFlag2",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "EnrollFlag3",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "EnrollFlag4",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "EnrollFlag5",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "EnrollFlag6",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "EnrollFlag7",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "EnrollFlag8",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "EnrollFlag9",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "EnrollFlag10",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "EnrollFlag11",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "EnrollFlag12",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_version",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_1",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_2",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_3",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_4",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_5",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_6",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_7",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_8",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_9",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_10",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_11",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_12",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_13",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_14",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_15",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_16",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_17",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_18",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_19",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_20",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_21",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_22",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_23",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_24",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_25",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_26",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_27",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_28",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_29",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_30",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_31",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_32",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_33",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_34",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_35",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_36",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_37",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_38",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_39",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_40",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_41",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_42",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_43",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_44",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_45",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_46",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_47",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_48",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_49",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_50",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_51",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_52",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_53",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_54",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_55",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_56",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_57",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_58",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_59",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_60",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_61",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_62",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_63",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_64",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_65",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_66",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_67",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_68",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_69",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_70",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_71",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_72",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_73",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_74",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_75",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_76",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_77",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_78",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_79",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_80",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_81",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_82",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_83",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_84",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_85",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_86",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_87",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_88",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_89",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "HCC_COL_90",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "BENE_RSK_R_SCRE_01",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "BENE_RSK_R_SCRE_02",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "BENE_RSK_R_SCRE_03",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "BENE_RSK_R_SCRE_04",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "BENE_RSK_R_SCRE_05",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "BENE_RSK_R_SCRE_06",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "BENE_RSK_R_SCRE_07",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "BENE_RSK_R_SCRE_08",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "BENE_RSK_R_SCRE_09",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "BENE_RSK_R_SCRE_10",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "BENE_RSK_R_SCRE_11",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "BENE_RSK_R_SCRE_12",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "ESRD_SCORE",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "DIS_SCORE",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "AGDU_SCORE",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "AGND_SCORE",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "DEM_ESRD_SCORE",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "DEM_DIS_SCORE",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "DEM_AGDU_SCORE",
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "name": "DEM_AGND_SCORE",
+                    "type": "string",
+                    "nullable": true
+                }
+            ]
+        },
+        {
+            "delimiter": "|",
+            "primary_key": "id",
+            "pattern": "reports/.*",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "int64",
+                    "nullable": false
+                },
+                {
+                    "name": "alpha",
+                    "type": "double",
+                    "nullable": true
+                },
+                {
+                    "name": "beta",
+                    "type": "double",
+                    "nullable": true
+                },
+                {
+                    "name": "gamma",
+                    "type": "double",
+                    "nullable": true
+                }
+            ]
+        }
+    ]
+}

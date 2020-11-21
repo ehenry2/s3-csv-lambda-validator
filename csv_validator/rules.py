@@ -99,6 +99,14 @@ class NoMatchingSchemaException(Exception):
     pass
 
 
+class WrongDelimiterException(Exception):
+    pass
+
+
+class ColumnOrderException(Exception):
+    pass
+
+
 class FileFormatValidator(Rule):
 
     def validate(self, session, event):
@@ -130,27 +138,51 @@ class ValidateSchema(Rule):
         for record in event["Records"]:
             bucket = record["s3"]["bucket"]["name"]
             key = record["s3"]["object"]["key"]
+            logging.info(f"Validating schema of file: s3://{bucket}/{key}")
             try:
                 schema = self.get_schema(key)
                 self.scan_file(bucket, key, schema)
             except pyarrow.lib.ArrowInvalid as e:
                 self.fail(e.args[0])
+                return
             except NoMatchingSchemaException:
                 self.fail(f"No schema matches key: {key}")
                 return
+            except WrongDelimiterException:
+                self.fail("Delimiter of the file is incorrect")
+                return
+            except ColumnOrderException as e:
+                self.fail(str(e))
+                return
             except Exception as e:
                 self.fail("Unknown error: {0}".format(str(e)))
+                return
         self.status = SUCCESS
 
     def scan_file(self, bucket, key, schema):
+        logging.info(f"delim is {self.delimiter}")
         uri = f"{bucket}/{key}"
         s3fs = fs.S3FileSystem()
+        # Run column order validation by opening and not reading anything.
+        filestream = s3fs.open_input_stream(uri)
+        reader = csv.open_csv(filestream)
+        for index, col in enumerate(reader.schema):
+            if col.name != schema[index].name:
+                msg = "column {} is out of order".format(col.name)
+                raise ColumnOrderException(msg)
+        # Run the rest of the validations.
         filestream = s3fs.open_input_stream(uri)
         opts = csv.ConvertOptions(column_types=schema)
         parse_opts = csv.ParseOptions(delimiter=self.delimiter)
         reader = csv.open_csv(filestream, convert_options=opts,
-                              parse_opts=parse_opts)
-        for _ in reader.read_next_batch():
+                              parse_options=parse_opts)
+        # Kind of a hack, but it works...if delim wrong, everything is read
+        # as one column.
+        if len(schema) > 1 and len(reader.schema) == 1:
+            raise WrongDelimiterException()
+        #TODO: If key is a string, need to check the column
+        # for empty strings.
+        for row in reader.read_next_batch():
             pass
 
     def get_schema(self, key):

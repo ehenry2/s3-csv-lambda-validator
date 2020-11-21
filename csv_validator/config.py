@@ -1,4 +1,5 @@
 import json
+import logging
 
 
 class ConfigLoader:
@@ -46,6 +47,7 @@ class S3JsonLoader(ConfigLoader):
         :returns: configuration dict
         """
         client = session.client("s3")
+        logging.info(f"Loading schema from s3://{self.bucket}/{self.key}")
         result = client.get_object(Bucket=self.bucket, Key=self.key)
         body = result["Body"].read()
         return json.loads(body)
