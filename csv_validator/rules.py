@@ -172,7 +172,8 @@ class ValidateSchema(Rule):
         s3fs = fs.S3FileSystem()
         # Run column order validation by opening and not reading anything.
         filestream = s3fs.open_input_stream(uri)
-        reader = csv.open_csv(filestream)
+        parse_opts = csv.ParseOptions(delimiter=self.delimiter)
+        reader = csv.open_csv(filestream, parse_options=parse_opts)
         for index, col in enumerate(reader.schema):
             if col.name != schema[index].name:
                 msg = "column {} is out of order".format(col.name)
@@ -180,7 +181,6 @@ class ValidateSchema(Rule):
         # Run the rest of the validations.
         filestream = s3fs.open_input_stream(uri)
         opts = csv.ConvertOptions(column_types=schema)
-        parse_opts = csv.ParseOptions(delimiter=self.delimiter)
         reader = csv.open_csv(filestream, convert_options=opts,
                               parse_options=parse_opts)
         # Kind of a hack, but it works...if delim wrong, everything is read

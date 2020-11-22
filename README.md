@@ -68,7 +68,7 @@ From the IAM dashboard, click on "Roles". Click "Create Role". Under "Select typ
 
 
 ### Add your new IAM role to your S3 bucket policy.
-If you don't have an s3 bucket policy you can skip this step. If you do have an s3 bucket policy, add the statement below to the "Statements" to give your role access. Replace \<your-aws-account-id\> ,\<iam-role-for-s3-access\>, and \<s3-bucket-name\> with the real values. Updat the bucket policy for both buckets.
+If you don't have an s3 bucket policy you can skip this step. If you do have an s3 bucket policy, add the statement below to the "Statements" to give your role access. Replace \<your-aws-account-id\> ,\<iam-role-for-s3-access\>, and \<s3-bucket-name\> with the real values. Update the bucket policy for both buckets.
 
 ```
 {
@@ -111,6 +111,12 @@ If "email" is specified, the additional environment variables "EMAIL_SENDER" and
 been already verified. Example: "me@example.com"
 * EMAIL_RECIPIENTS -> Comma separated list of the email addresses to send the notification message to.
 Example: "you@example.com,them@example.com"
+
+After you finish configuring the environment variables, under "Basic Settings", click "Edit". Bump the memory up to the maximum (~3008 MB) and the timeout to 15 minutes, 0 seconds (the maximum). The UI is a bit buggy, so just refresh the page if it won't accept your number. You might have to click the button to increment the minutes instead of typing it in. 
+Make sure the execution role is the role you created earlier. Click "save".
+
+Now we need to set the function handler. Under 'runtime settings', click "Edit". Change handler to
+"csv_validator.handler.handle".
 
 
 ### Enable the lambda trigger
