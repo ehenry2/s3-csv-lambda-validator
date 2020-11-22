@@ -107,6 +107,10 @@ class ColumnOrderException(Exception):
     pass
 
 
+class EmptyPrimaryKeyException(Exception):
+    pass
+
+
 class FileFormatValidator(Rule):
 
     def validate(self, session, event):
@@ -154,6 +158,9 @@ class ValidateSchema(Rule):
             except ColumnOrderException as e:
                 self.fail(str(e))
                 return
+            except EmptyPrimaryKeyException as e:
+                self.fail("Primary key column has a missing value")
+                return
             except Exception as e:
                 self.fail("Unknown error: {0}".format(str(e)))
                 return
@@ -180,10 +187,17 @@ class ValidateSchema(Rule):
         # as one column.
         if len(schema) > 1 and len(reader.schema) == 1:
             raise WrongDelimiterException()
-        #TODO: If key is a string, need to check the column
-        # for empty strings.
-        for row in reader.read_next_batch():
-            pass
+        # Parse through the file, pyarrow will through exceptions
+        # if there's invalid data.
+        for batch in reader:
+            # If primary key is a string, need to check the column
+            # for empty strings.
+            if schema.field(self.primary_key).type == "string":
+                table = pyarrow.Table.from_batches([batch])
+                for val in table[self.primary_key]:
+                    if val.as_py() == "":
+                        raise EmptyPrimaryKeyException()
+
 
     def get_schema(self, key):
         for path in self.paths:
@@ -204,3 +218,4 @@ class ValidateSchema(Rule):
                 schema = pyarrow.schema(fields)
                 return schema
         raise NoMatchingSchemaException()
+

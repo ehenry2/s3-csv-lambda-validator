@@ -2,7 +2,6 @@ import datetime
 import os
 import json
 
-
 from behave import *
 import boto3
 
