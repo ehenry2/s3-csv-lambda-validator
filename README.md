@@ -44,6 +44,15 @@ and "my-config-bucket" with the name of your data and configuration buckets, res
         "logs:PutLogEvents"
       ],
       "Resource": "*"
+    },
+    {
+      "Sid": "SendEmailWithSES",
+      "Effect": "Allow",
+      "Action": [
+        "ses:SendEmail",
+        "ses:SendRawEmail"
+      ],
+      "Resource": "*"
     }
   ]
 }
