@@ -5,4 +5,4 @@ Feature: Wrong delimiter
         Given the "wrong_delim" csv is uploaded to our s3 bucket
         Given the "wrong_delim" schema is uploaded to our s3 bucket
         When the csv validator is triggered locally
-        Then the "SchemaValidator" check should fail
+        Then the "ValidateSchema" check should fail
