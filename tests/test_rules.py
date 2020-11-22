@@ -26,7 +26,9 @@ class MockRuleFailure(Rule):
         :param event: Event passed to the lambda
         :type  event: dict
         """
-        self.fail(self.reason)
+        bucket = event["Records"][0]["s3"]["bucket"]["name"]
+        key = event["Records"][0]["s3"]["object"]["key"]
+        self.fail(self.reason, bucket, key)
         self.calls = (session, event)
 
 
@@ -49,7 +51,9 @@ class MockRuleOk(Rule):
         :param event: Event passed to the lambda
         :type  event: dict
         """
-        self.status = SUCCESS
+        bucket = event["Records"][0]["s3"]["bucket"]["name"]
+        key = event["Records"][0]["s3"]["object"]["key"]
+        self.success(bucket, key)
         self.calls = (session, event)
 
 
@@ -58,10 +62,17 @@ def test_validation_suite():
     r2 = MockRuleFailure("r2", 'secondrule', 'epic fail')
     rules = [r1, r2]
     expected_results = [
-        ("SUCCESS", "r1", 'first rule', ''),
-        ("FAILED", "r2", 'secondrule', 'epic fail')
+        ("SUCCESS", "r1", 'first rule', '', "testb", "testkey"),
+        ("FAILED", "r2", 'secondrule', 'epic fail', "testb", "testkey")
     ]
-    event = {}
+    event = {
+        "Records": [{
+            "s3": {
+                "bucket": {"name": "testb"},
+                "object": {"key": "testkey"}
+            }
+        }]
+    }
     session = mock.MagicMock()
     mock_notifier = mock.MagicMock()
     suite = ValidationSuite(rules, mock_notifier)
@@ -87,12 +98,12 @@ def test_file_format_validator():
     # Check reject xls
     v = FileFormatValidator("", "")
     v.validate(mock.MagicMock(), event)
-    assert v.status == "FAILED"
+    assert v.results[0][0] == "FAILED"
     # Check csv is passes.
     event["Records"][0]["s3"]["object"]["key"] = "reports/myfile.csv"
     v = FileFormatValidator("", "")
     v.validate(mock.MagicMock(), event)
-    assert v.status == "SUCCESS"
+    assert v.results[0][0] == "SUCCESS"
 
 
 def test_get_schema():

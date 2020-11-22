@@ -15,8 +15,8 @@ class Notifier:
         Send a notification to the user when complete.
 
         :param results: The results in tuple form for each rule.
-                        The tuple has the format (status, name, description, output)
-        :type  results: List of tuples of (string, string, string, string)
+                        The tuple has the format (status, name, description, output, bucket, key)
+        :type  results: List of tuples of (string, string, string, string, string, string)
         """
         raise NotImplementedError()
 
@@ -30,8 +30,8 @@ class DebugNotifier(Notifier):
         Send a notification to the user when complete.
 
         :param results: The results in tuple form for each rule.
-                        The tuple has the format (status, name, description, output)
-        :type  results: List of tuples of (string, string, string, string)
+                        The tuple has the format (status, name, description, output, bucket, key)
+        :type  results: List of tuples of (string, string, string, string, string, string)
         """
         print(results)
 
@@ -51,7 +51,7 @@ class CsvEmailNotifier(Notifier):
         buffer = io.StringIO()
         writer = csv.writer(buffer)
         # Write the header.
-        header = ("status", "name", "description", "output")
+        header = ("status", "name", "description", "output", "bucket", "key")
         writer.writerow(header)
         for row in results:
             writer.writerow(row)
@@ -80,8 +80,8 @@ class CsvEmailNotifier(Notifier):
         Send a notification to the user when complete.
 
         :param results: The results in tuple form for each rule.
-                        The tuple has the format (status, name, description, output)
-        :type  results: List of tuples of (string, string, string, string)
+                        The tuple has the format (status, name, description, output, bucket, key)
+        :type  results: List of tuples of (string, string, string, string, string, string)
         """
         # For email, we probably only want to notify if a failure has
         # occurred, so check first before we send anything.

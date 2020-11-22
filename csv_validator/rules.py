@@ -29,20 +29,23 @@ class Rule:
         :type  description: String
         """
         self.description = description
-        self.status = NOT_RUN
-        self.output = ""
+        self.results = []
         self.continue_on_fail = False
         self.name = name
 
-    def fail(self, message):
+    def fail(self, message, bucket, key):
         """
         Acknowledge that the rule failed.
 
         :param message: Output/Explanation for rule failure.
         :type  message: String
         """
-        self.status = FAILED
-        self.output = message
+        row = (FAILED, self.name, self.description, message, bucket, key)
+        self.results.append(row)
+    
+    def success(self, bucket, key):
+        row = (SUCCESS, self.name, self.description, "", bucket, key)
+        self.results.append(row)
 
     def validate(self, session, event):
         """
@@ -89,8 +92,12 @@ class ValidationSuite:
         results = []
         for rule in self.rules:
             rule.validate(session, event)
-            results.append((rule.status, rule.name, rule.description, rule.output))
-            if rule.status == FAILED and rule.continue_on_fail is False:
+            results += rule.results
+            finished = False
+            for row in rule.results:
+                if row[0] == FAILED and rule.continue_on_fail is False:
+                    finished = True
+            if finished:
                 break
         self.notifier.notify(results)
 
@@ -116,14 +123,15 @@ class FileFormatValidator(Rule):
     def validate(self, session, event):
         self.status = STARTED
         for record in event["Records"]:
+            bucket = record["s3"]["bucket"]["name"]
             key = record["s3"]["object"]["key"]
             logging.info(f"Validating csv file format for {key}")
             if key.split(".")[-1] != "csv":
                 msg = f"{key} does not match pattern of *.csv"
                 logging.info(msg)
-                self.fail(msg)
+                self.fail(msg, bucket, key)
                 return
-        self.status = SUCCESS
+            self.success(bucket, key)
 
 
 class ValidateSchema(Rule):
@@ -147,24 +155,24 @@ class ValidateSchema(Rule):
                 schema = self.get_schema(key)
                 self.scan_file(bucket, key, schema)
             except pyarrow.lib.ArrowInvalid as e:
-                self.fail(e.args[0])
+                self.fail(e.args[0], bucket, key)
                 return
             except NoMatchingSchemaException:
-                self.fail(f"No schema matches key: {key}")
+                self.fail(f"No schema matches key: {key}", bucket, key)
                 return
             except WrongDelimiterException:
-                self.fail("Delimiter of the file is incorrect")
+                self.fail("Delimiter of the file is incorrect", bucket, key)
                 return
             except ColumnOrderException as e:
-                self.fail(str(e))
+                self.fail(str(e), bucket, key)
                 return
             except EmptyPrimaryKeyException as e:
-                self.fail("Primary key column has a missing value")
+                self.fail("Primary key column has a missing value", bucket, key)
                 return
             except Exception as e:
-                self.fail("Unknown error: {0}".format(str(e)))
+                self.fail("Unknown error: {0}".format(str(e)), bucket, key)
                 return
-        self.status = SUCCESS
+            self.success(bucket, key)
 
     def scan_file(self, bucket, key, schema):
         logging.info(f"delim is {self.delimiter}")
@@ -197,7 +205,6 @@ class ValidateSchema(Rule):
                 for val in table[self.primary_key]:
                     if val.as_py() == "":
                         raise EmptyPrimaryKeyException()
-
 
     def get_schema(self, key):
         for path in self.paths:
