@@ -10,11 +10,11 @@ def step_impl(context, check_name):
         Key=context.atdd_report_key
     )
     results = json.loads(response["Body"].read())
-    print(results)
     for result in results:
-        print(result)
         if result[1] == check_name:
             if result[0] != "FAILED":
                 raise Exception(f"Check {check_name} did not fail as required: {result}")
-            print(result)
-    raise Exception
+            else:
+                return
+        print(result)
+    raise Exception(f"Could not find a result that matches {check_name}")

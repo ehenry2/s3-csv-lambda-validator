@@ -28,7 +28,7 @@ def handle(event, context):
         notifier = AtddNotifier(bucket, key, session)
     elif notifier_type.lower() == "email":
         sender = os.environ["EMAIL_SENDER"]
-        recipients = os.environ["EMAIL_RECIPIENTS"]
+        recipients = os.environ["EMAIL_RECIPIENTS"].split(",")
         notifier = CsvEmailNotifier(sender, recipients, session)
     rules = [
         FileFormatValidator("FileFormatValidator", "File format must end in .csv"),
