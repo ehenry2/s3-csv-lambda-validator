@@ -3,7 +3,23 @@
 
 ## Introduction
 This repo contains code for deploying a lambda function to validate CSV files
-as they are created in your S3 bucket.
+as they are created in your S3 bucket. Some features include:
+
+
+* Column order validation
+* Data type validation
+* Primary key missing values check
+* Wrong delimiter check
+* Invalid file names chek
+
+
+Features from the development perpective include:
+
+* Unit tests
+* ATDD tests (Acceptance tests) using the Behave framework
+* Documentation on how to deploy the system
+* Basic automated deployment using CodeBuild
+
 
 ## Before you begin
 You will need at least two S3 buckets in production, one for configuration
@@ -119,12 +135,6 @@ Now we need to set the function handler. Under 'runtime settings', click "Edit".
 "csv_validator.handler.handle".
 
 
-### Enable the lambda trigger
-The next step is to trigger your lambda to run every time an object is created in your bucket.
-Go to your function page. In the "designer" section of the lambda page, click "Add trigger".
-Under "Trigger configuration", pick "S3". Choose your data bucket for "bucket". For "event type", pick "PUT".
-Acknowledge the "Recursive Invocation", then click "Add"
-
 ### Create your schema file
 The lambda function requires a schema file specified
 as a json to be loaded from an s3 bucket. It can be
@@ -151,7 +161,11 @@ Now we can run our schema generator cli tool. Most options are self explanatory,
 a python regular expression (https://docs.python.org/3/library/re.html) that provides a schema for set of objects.
 So for example, if you have a "reports" directory and you have various csvs landing there, but they all have
 the same schema (e.g. reports/2020-01-01.csv, reports/2020-01-02.csv), you can put "reports/.*csv" to match
-those files, or more complicated regex if you prefer. An example of running the tool would be:
+those files, or more complicated regex if you prefer. Note: file globs are not the same as python regex.
+For example, to match all csv files in reports directory, 'reports/*.csv' would need to be changed to
+'reports/.*\\.csv'.
+
+An example of running the tool would be:
 
 ```
 python3 bin/schema_from_file.py \
@@ -173,3 +187,60 @@ aws s3 cp schema.json s3://my-bucket/some/prefix/schema.json
 ```
 
 Then set your CONFIG_KEY environment variable to the key path (e.g. "some/prefix/schema.json")
+
+## Set up codebuild.
+Because this lambda function depends on compiled dependencies specific to system architecture,
+it's recommended to use codebuild to upload the code of your lambda function. You might be able
+to get away with this if you're running linux + x86_64 arch, but this is relatively simple to configure
+and cheap. Builds last around a minute, so cost is minimal (e.g. $.005/min, with some covered under free tier).
+
+
+In the AWS console, go to 'Services' and search for "CodeBuild". Click on "Build Projects" -> 'Create Build Project'.
+Give it a name under 'Project configuration'. Under 'Source', update 'Source provider' to 'Github'. Click 'Connect to github' and put in the info for your github account. It should then update for 'Repository' so you can pick 'Public Repository'. Then put 'https://github.com/ehenry2/s3-csv-lambda-validator' for the repository url. For 'Source version', put 'main'. Under 'Enviroment', choose 'Managed image', 'Operating System' -> 'Ubuntu', 'Runtime' -> 'Standard',
+'Image' -> 'aws/codebuild/standard:4.0', 'Image version' -> 'Always use the latest for this runtime',
+'Environment' -> 'Linux'. For service role, choose 'New Service Role' and give it a name. Click 'Additional Configuration' and change timeout to 10 minutes and hours to 0. Under 'compute' choose the smallest option (3GB memory). For the 'Buildspec' section, choose "Insert Build commands", then click "Switch to Editor". Copy and paste in the following, replacing the lambda name (e.g. in this example "s3-csv-validation-lambda" with the name of your lambda function.
+
+```
+version: 0.2
+
+phases:
+  build:
+    commands:
+       - mkdir builddir && cd builddir && pip3 install -r ../requirements.txt -t . && mkdir csv_validator && cp -R ../csv_validator/*.py csv_validator && zip -r9 code.zip . && aws lambda update-function-code --function-name s3-csv-validation-lambda --zip-file fileb://code.zip
+```
+
+Finally, under "logs", enter a name for log group and stream name. Then click "Create build project"
+
+
+Next, we need to create another custom policy so we can have codebuild update our lambda function.
+Go to the IAM console -> "Policies" -> "Create new". Then choose json tab and copy and paste this policy in, replacing
+the lambda function with your lambda function name and the account number with your account number.
+
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "CodeBuildLambdaUpdate",
+            "Effect": "Allow",
+            "Action": "lambda:UpdateFunctionCode",
+            "Resource": "arn:aws:lambda:us-east-1:<aws account num>:function:<your lambda function name>"
+        }
+    ]
+}
+```
+
+Once you've created this policy, attach it to the CodeBuild role you created before.
+
+You can now build your lambda. In the CodeBuild console, click on "Build Projects" -> name of your project, then "Start build". On the next screen the defaults should be fine and it should start building!
+
+
+### Enable the lambda trigger
+Now that your lambda function is ready to go, we will set it upto trigger your lambda to run every time an object is created in your bucket.
+Go to your function page. In the "designer" section of the lambda page, click "Add trigger".
+Under "Trigger configuration", pick "S3". Choose your data bucket for "bucket". For "event type", pick "PUT".
+For prefix, put one of the paths you want to monitor with the lambda. You can create multiple s3 triggers for different
+paths. It's recommended to do this instead of having one for the whole bucket.
+Acknowledge the "Recursive Invocation", then click "Add".
+
+Now you can upload an object and see it execute in cloudwatch (and/or receive email notifications if something went wrong).
