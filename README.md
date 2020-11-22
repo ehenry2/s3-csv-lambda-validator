@@ -154,7 +154,7 @@ it will append another path to that file instead of overwriting it.
 After you are done, you can upload your schema file to s3 (example is with old version of AWS CLI).
 
 ```
-aws s3 cp my.csv s3://my-bucket/some/prefix/schema.json
+aws s3 cp schema.json s3://my-bucket/some/prefix/schema.json
 ```
 
 Then set your CONFIG_KEY environment variable to the key path (e.g. "some/prefix/schema.json")
